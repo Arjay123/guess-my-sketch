@@ -15,7 +15,8 @@ app.get('/', function(req, res) {
 })
 
 io.on('connect', function(socket) {
-  console.log('a user connected: ' + socket.id);
+  // console.log('a user connected: ' + socket.id);
+  socket.emit('test', {'testKey': 'testValue'});
 });
 
 server.listen(3000, () => {
