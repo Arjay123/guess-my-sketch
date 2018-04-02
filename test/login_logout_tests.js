@@ -7,9 +7,11 @@ const Server = require('../src/server/server');
 describe('Login/Logout Tests', () => {
   before((done) => {
     this.port = 8080;
-    this.SERVERURL = 'http://localhost:' + this.port;
+    this.SERVERURL = 'http://localhost:' + this.port +'/loginLogout';
     this.server = new Server(this.port);
     this.server.start();
+    this.server.createNamespace('loginLogout');
+    this.ns = this.server.namespaces['loginLogout'];
     done();
   });
 
@@ -19,8 +21,8 @@ describe('Login/Logout Tests', () => {
   });
 
   beforeEach((done) => {
-    this.client = io.connect(this.SERVERURL);
-    this.client2 = io.connect(this.SERVERURL);
+    this.client = io(this.SERVERURL);
+    this.client2 = io(this.SERVERURL);
     done();
   });
 
@@ -76,7 +78,7 @@ describe('Login/Logout Tests', () => {
 
     this.client.on('login success', (username) => {
 
-      var user = this.server.users[Object.keys(this.server.users)[0]];
+      var user = this.ns.getUserByUsername(expected_username);
       assert.equal(user.username, expected_username);
       done();
 
@@ -88,7 +90,7 @@ describe('Login/Logout Tests', () => {
     this.client.emit('login', "PEERID", expected_username);
 
     this.client.on('logout success', () => {
-      assert.equal(null, this.server.getUserByUsername(expected_username));
+      assert.equal(null, this.ns.getUserByUsername(expected_username));
       done();
     });
 
