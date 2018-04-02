@@ -30,8 +30,9 @@ describe('Client Tests', () => {
     done();
   })
 
-  //Test successful login
-  it('Successful login, should equal "USERNAME1"', (done) => {
+  // Client Tests
+  // Test Login success
+  it('Client: Successful login, should receive "USERNAME1"', (done) => {
     let expected_username = 'USERNAME1';
     let err = true;
 
@@ -49,8 +50,8 @@ describe('Client Tests', () => {
     });
   });
 
-  //Test failed login
-  it('Failed login, "USERNAME1" already in use', (done) => {
+  // Test failed login
+  it('Client: Failed login, should fire login fail event', (done) => {
     let username = "USERNAME1";
     let taken = false;
     this.client.emit('login', "PEERID", username);
@@ -68,4 +69,33 @@ describe('Client Tests', () => {
     this.client.on('login fail', (message) => done());
     this.client2.on('login fail', (message) => done());
   });
+
+  it('Server: Users object should contain user after login', (done) => {
+    let expected_username = "USERNAME1";
+    this.client.emit('login', "PEERID", expected_username);
+
+    this.client.on('login success', (username) => {
+
+      var user = this.server.users[Object.keys(this.server.users)[0]];
+      assert.equal(user.username, expected_username);
+      done();
+
+    });
+  });
+
+  it('Server: Users object should not contain user after logout', (done) => {
+    let expected_username = "USERNAME1";
+    this.client.emit('login', "PEERID", expected_username);
+
+    this.client.on('logout success', () => {
+      assert.equal(null, this.server.getUserByUsername(expected_username));
+      done();
+    });
+
+    this.client.on('login success', (username) => {
+      this.client.emit('logout');
+    });
+  });
+
+
 });
