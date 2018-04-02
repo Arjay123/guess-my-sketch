@@ -43,4 +43,18 @@ describe('Server Tests', () => {
 
     });
   });
+
+  it('Users object should not contain user after logout', (done) => {
+    let expected_username = "USERNAME1";
+    this.client.emit('login', "PEERID", expected_username);
+
+    this.client.on('logout success', () => {
+      assert.equal(null, this.server.getUserByUsername(expected_username));
+      done();
+    });
+
+    this.client.on('login success', (username) => {
+      this.client.emit('logout');
+    });
+  });
 });

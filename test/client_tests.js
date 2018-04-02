@@ -51,18 +51,21 @@ describe('Client Tests', () => {
 
   //Test failed login
   it('Failed login, "USERNAME1" already in use', (done) => {
-
     let username = "USERNAME1";
-
+    let taken = false;
     this.client.emit('login', "PEERID", username);
     this.client2.emit('login', "PEERID", username);
 
-    this.client2.on('login success', (actual_username) => {
-      done(`Error, ${actual_username} should be taken`);
-    });
+    let loginCallback = () => {
+      if(taken)
+        done(`Error, ${actual_username} should be taken`);
+      taken = true;
+    }
 
-    this.client2.on('login fail', (message) => {
-      done();
-    });
+    this.client.on('login success', (actual_username) => loginCallback);
+    this.client2.on('login success', (actual_username) => loginCallback);
+
+    this.client.on('login fail', (message) => done());
+    this.client2.on('login fail', (message) => done());
   });
 });
