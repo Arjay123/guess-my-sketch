@@ -4,7 +4,7 @@ const io = require('socket.io-client');
 const Server = require('../src/server/server');
 
 
-describe('Client Tests', () => {
+describe('Login/Logout Tests', () => {
   before((done) => {
     this.port = 8080;
     this.SERVERURL = 'http://localhost:' + this.port;
