@@ -1,18 +1,33 @@
 const assert = require('assert');
 const io = require('socket.io-client');
 
-const SERVER = 'http://localhost:3000';
+const Server = require('../src/server/server');
 
 
-describe('Login Tests', () => {
-  beforeEach(() => {
-    this.client = io.connect(SERVER);
-    this.client2 = io.connect(SERVER);
+describe('Client Tests', () => {
+  before((done) => {
+    this.port = 8080;
+    this.SERVERURL = 'http://localhost:' + this.port;
+    this.server = new Server(this.port);
+    this.server.start();
+    done();
   });
 
-  afterEach(() => {
+  after((done) => {
+    this.server.end();
+    done();
+  });
+
+  beforeEach((done) => {
+    this.client = io.connect(this.SERVERURL);
+    this.client2 = io.connect(this.SERVERURL);
+    done();
+  });
+
+  afterEach((done) => {
     this.client.disconnect();
     this.client2.disconnect();
+    done();
   })
 
   //Test successful login
