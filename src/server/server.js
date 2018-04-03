@@ -12,6 +12,7 @@ module.exports = class Server {
     this.server = http.Server(this.app);
     this.ioserver = io(this.server);
     this.namespaces = {};
+    this.verbose = true;
 
     // static files
     this.app.use('/build', express.static(path.resolve(__dirname + '/../../build')));
@@ -21,14 +22,19 @@ module.exports = class Server {
       res.sendFile(path.resolve(__dirname + '/../../index.html'));
     });
 
+    let self = this;
     this.ioserver.on('connection', (socket)=> {
-      console.log(`default: ${socket.id} connected`);
+      self.print(`default: ${socket.id} connected`);
     })
 
     this.ioserver.on('create namespace', (endpoint) => this.createNamespace(endpoint));
     this.ioserver.on('join namespace', () => console.log('join namespace'));
     this.ioserver.on('delete namespace', () => console.log('delete namespace'));
     // this.createNamespace('loginLogout');
+  }
+
+  print(message) {
+    if (this.verbose) console.log(`default: ${message}`);
   }
 
   createNamespace(endpoint) {
@@ -40,8 +46,9 @@ module.exports = class Server {
    * start() starts the server by listening to designated port
    */
   start() {
+    let self = this;
     this.server.listen(this.port, () => {
-      console.log(`Listening to port ${this.port}`);
+      self.print(`Listening to port ${this.port}`);
     });
   }
 
@@ -49,8 +56,9 @@ module.exports = class Server {
    * end() closes the server
    */
   end() {
+    let self = this;
     this.server.close(() => {
-      console.log(`Server listening to port ${this.port} has closed`);
+      self.print(`Server listening to port ${this.port} has closed`);
     });
   }
 }
