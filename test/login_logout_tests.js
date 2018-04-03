@@ -9,9 +9,11 @@ describe('Login/Logout Tests', () => {
     this.port = 8080;
     this.SERVERURL = 'http://localhost:' + this.port +'/loginLogout';
     this.server = new Server(this.port);
+    this.server.verbose = false;
     this.server.start();
     this.server.createNamespace('loginLogout');
     this.ns = this.server.namespaces['loginLogout'];
+    this.ns.verbose = false;
     done();
   });
 
@@ -30,7 +32,7 @@ describe('Login/Logout Tests', () => {
     this.client.disconnect();
     this.client2.disconnect();
     done();
-  })
+  });
 
   // Client Tests
   // Test Login success
