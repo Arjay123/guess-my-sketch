@@ -5,9 +5,9 @@ const Server = require('../src/server/server');
 
 describe('Chat Tests', () => {
   before((done) => {
-    this.endpoint = 'chat';
+    this.endpoint = '/chat';
     this.port = 8081;
-    this.SERVERURL = `http://localhost:${this.port}/${this.endpoint}`;
+    this.SERVERURL = `http://localhost:${this.port}${this.endpoint}`;
     this.server = new Server(this.port);
     this.server.verbose = false;
     this.server.start();
@@ -56,4 +56,6 @@ describe('Chat Tests', () => {
       }
     });
   });
+
+
 });

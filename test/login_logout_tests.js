@@ -6,8 +6,9 @@ const Server = require('../src/server/server');
 
 describe('Login/Logout Tests', () => {
   before((done) => {
+    this.endpoint = '/loginLogout';
     this.port = 8080;
-    this.SERVERURL = 'http://localhost:' + this.port +'/loginLogout';
+    this.SERVERURL = `http://localhost:${this.port}${this.endpoint}`;
     this.server = new Server(this.port);
     this.server.verbose = false;
     this.server.start();

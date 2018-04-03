@@ -95,6 +95,26 @@ module.exports = class Namespace {
     if (this.users.hasOwnProperty(socketID))
       return this.users[socketID];
   }
+
+  /**
+   * destroy() removes all sockets and event listeners and
+   * signals server to destroy namespace instance
+   */
+  destroy(callback) {
+    const connections = Object.keys(this.namespace.connected);
+
+
+    let self = this;
+    this.print(`Disconnecting all sockets`);
+    connections.forEach((socketID) => {
+      this.print(`Disconnecting socket: ${socketID}`);
+      self.namespace.connected[socketID].disconnect();
+    });
+
+    this.print(`Removing listeners`);
+    this.namespace.removeAllListeners();
+    callback(this.endpoint);
+  }
 }
 
 

@@ -30,16 +30,52 @@ module.exports = class Server {
     this.ioserver.on('create namespace', (endpoint) => this.createNamespace(endpoint));
     this.ioserver.on('join namespace', () => console.log('join namespace'));
     this.ioserver.on('delete namespace', () => console.log('delete namespace'));
-    // this.createNamespace('loginLogout');
   }
 
   print(message) {
     if (this.verbose) console.log(`default: ${message}`);
   }
 
+  /**
+   * createNamespace() creates a new namespace under the provided
+   * endpoint and adds it to the namespaces object
+   *
+   * @param {String} endpoint
+   */
   createNamespace(endpoint) {
-    let ns = new Namespace(endpoint, this.ioserver.of(`/${endpoint}`));
+    let ns = new Namespace(endpoint, this.ioserver.of(endpoint), this.destroyNamespace);
     this.namespaces[endpoint] = ns;
+  }
+
+  /**
+   * destroyNamespace() begins namespace destruction process by
+   * signaling namespace to deallocate its resources and call
+   * destroyNamespaceCallback upon completion
+   *
+   * @param {String} endpoint
+   */
+  destroyNamespace(endpoint) {
+    if (this.namespaces.hasOwnProperty(endpoint)) {
+      this.namespaces[endpoint].destroy(this.destroyNamespaceCallback.bind(this));
+    }
+  }
+
+  /**
+   * destroyNamespaceCallback() is called once a namespace's
+   * resources are deallocated, deletes namespace from namespace
+   * object and ioserver's stored nsps
+   *
+   * @param {String} endpoint
+   */
+  destroyNamespaceCallback(endpoint) {
+    this.print(`Namespace: ${endpoint} empty, ready to delete`);
+
+    if (this.ioserver.nsps.hasOwnProperty(endpoint))
+      delete this.ioserver.nsps[endpoint];
+
+    if (this.namespaces.hasOwnProperty(endpoint));
+      delete this.namespaces[endpoint];
+    this.print(`Namespace: ${endpoint} deleted`);
   }
 
   /**
