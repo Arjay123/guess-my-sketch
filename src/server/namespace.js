@@ -22,6 +22,8 @@ module.exports = class Namespace {
   }
 
   /**
+   * sendMessage() sends message from socket to rest of
+   * connected sockets in this namespace
    *
    * @param {Socket} socket - message sender
    * @param {String} message - text of message
