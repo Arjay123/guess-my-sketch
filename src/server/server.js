@@ -24,16 +24,30 @@ module.exports = class Server {
 
     let self = this;
     this.ioserver.on('connection', (socket)=> {
-      self.print(`default: ${socket.id} connected`);
-    })
+      self.print(`${socket.id} connected`);
 
-    this.ioserver.on('create namespace', (endpoint) => this.createNamespace(endpoint));
-    this.ioserver.on('join namespace', () => console.log('join namespace'));
-    this.ioserver.on('delete namespace', () => console.log('delete namespace'));
+      socket.on('join namespace', (endpoint) => self.joinNamespace(socket, endpoint));
+      socket.on('create namespace', (endpoint) => {
+        this.createNamespace(endpoint);
+        socket.emit('namespace created', (endpoint));
+      });
+    });
   }
 
   print(message) {
     if (this.verbose) console.log(`default: ${message}`);
+  }
+
+  /**
+   * joinNamespace() signals socket if namespace is okay to join
+   */
+  joinNamespace(socket, endpoint) {
+    if (this.namespaces.hasOwnProperty(endpoint)) {
+      socket.emit('join namespace', endpoint);
+    }
+    else {
+      socket.emit('namespace not found');
+    }
   }
 
   /**

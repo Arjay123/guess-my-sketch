@@ -20,11 +20,15 @@ describe('Namespace Tests', () => {
   });
 
   it('Create namespace, should be created under server.namespaces', (done) => {
-    this.server.createNamespace(this.endpoint);
 
-    assert.equal(true, this.server.namespaces.hasOwnProperty(this.endpoint));
-    assert.equal(true, this.server.ioserver.nsps.hasOwnProperty(this.endpoint));
-    done();
+    let client = io('http://localhost:' + this.port);
+    client.emit('create namespace', this.endpoint);
+    client.on('namespace created', (endpoint) => {
+      assert.equal(true, this.server.namespaces.hasOwnProperty(this.endpoint));
+      assert.equal(true, this.server.ioserver.nsps.hasOwnProperty(this.endpoint));
+      client.disconnect();
+      done();
+    });
   });
 
   it('Destroy namespace, should no longer be under server.namespaces', (done) => {
@@ -36,4 +40,37 @@ describe('Namespace Tests', () => {
     assert.equal(false, this.server.ioserver.nsps.hasOwnProperty(this.endpoint));
     done();
   });
+
+  it('Join namespace, namespace should exist', (done) => {
+    this.server.createNamespace(this.endpoint);
+
+    let client = io('http://localhost:' + this.port);
+    client.emit('join namespace', this.endpoint);
+
+    client.on('join namespace', (endpoint) => {
+      client.disconnect();
+      done();
+    });
+
+    client.on('namespace not found', () => {
+      client.disconnect();
+      done(`Error: ${this.endpoint} namespace should exist`);
+    });
+  });
+
+  it('Join namespace, namespace should not exist', (done) => {
+    let client = io('http://localhost:' + this.port);
+    client.emit('join namespace', '/IDontExist');
+
+    client.on('join namespace', (endpoint) => {
+      client.disconnect();
+      done(`Error: ${endpoint} should not exist`);
+    });
+
+    client.on('namespace not found', (endpoint) => {
+      client.disconnect();
+      done();
+    });
+  });
+
 });
