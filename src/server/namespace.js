@@ -13,12 +13,23 @@ module.exports = class Namespace {
       socket.on('login', (peerID, username) => self.login(socket, peerID, username));
       socket.on('disconnect', () => self.logout(socket));
       socket.on('logout', () => self.logout(socket));
+      socket.on('chat message', (message) => self.sendMessage(socket, message));
     });
   }
 
   print(message) {
-    if (this.verbose) {
-      console.log(`${this.endpoint}: ${message}`);
+    if (this.verbose) console.log(`${this.endpoint}: ${message}`);
+  }
+
+  /**
+   *
+   * @param {Socket} socket - message sender
+   * @param {String} message - text of message
+   */
+  sendMessage(socket, message) {
+    let user = this.getUserBySocketID(socket.id);
+    if (user) {
+      socket.broadcast.emit('chat message', user.username, message);
     }
   }
 
@@ -46,7 +57,7 @@ module.exports = class Namespace {
 
     this.print(`${socket.id} has logged in as: ${username}`);
     this.print('Current Users');
-    console.log(this.users);
+    this.print(this.users);
 
     socket.emit('login success', (username));
   }
@@ -73,6 +84,14 @@ module.exports = class Namespace {
         return this.users[id];
     }
     return null;
+  }
+
+  /**
+   * getUserBySocketID returns user if user exists
+   */
+  getUserBySocketID(socketID) {
+    if (this.users.hasOwnProperty(socketID))
+      return this.users[socketID];
   }
 }
 
