@@ -24,12 +24,20 @@ module.exports = class Server {
 
     let self = this;
     this.ioserver.on('connection', (socket)=> {
-      self.print(`${socket.id} connected`);
+      self.print(`Socket ${socket.id} connected`);
 
       socket.on('join namespace', (endpoint) => self.joinNamespace(socket, endpoint));
-      socket.on('create namespace', (endpoint) => {
-        this.createNamespace(endpoint);
-        socket.emit('namespace created', (endpoint));
+      socket.on('create namespace', () => {
+        let endpoint = this.createNamespace();
+
+        if (endpoint) {
+          socket.emit('namespace created', endpoint);
+        }
+        else {
+          this.print(`Request for new namespace by ${socket.id} denied, namespaces full`);
+          socket.emit('namespaces full');
+        }
+
       });
     });
   }
@@ -42,12 +50,28 @@ module.exports = class Server {
    * joinNamespace() signals socket if namespace is okay to join
    */
   joinNamespace(socket, endpoint) {
+    this.print(`Socket ${socket.id} attemping to join ${endpoint}`);
+
     if (this.namespaces.hasOwnProperty(endpoint)) {
       socket.emit('join namespace', endpoint);
     }
     else {
-      socket.emit('namespace not found');
+      this.print(`Socket ${socket.id} failed to join ${endpoint}, namespace not found`);
+      socket.emit('namespace not found', endpoint);
     }
+  }
+
+  /**
+   * createNamespaceID generates and returns a random, unused
+   * id string
+   */
+  createNamespaceID() {
+    var namespaceID;
+    while(!namespaceID || this.namespaces.hasOwnProperty(namespaceID)) {
+      namespaceID = Math.random().toString(36).substr(2, 6).toUpperCase();
+    }
+
+    return namespaceID;
   }
 
   /**
@@ -56,9 +80,16 @@ module.exports = class Server {
    *
    * @param {String} endpoint
    */
-  createNamespace(endpoint) {
-    let ns = new Namespace(endpoint, this.ioserver.of(endpoint), this.destroyNamespace);
-    this.namespaces[endpoint] = ns;
+  createNamespace() {
+    if (Object.keys(this.namespaces).length < 10) {
+      let endpoint = this.createNamespaceID();
+      let ns = new Namespace(endpoint, this.ioserver.of(endpoint), this.destroyNamespace);
+      this.namespaces[endpoint] = ns;
+
+      this.print(`Namespace ${endpoint} created`);
+
+      return endpoint;
+    }
   }
 
   /**
@@ -82,14 +113,14 @@ module.exports = class Server {
    * @param {String} endpoint
    */
   destroyNamespaceCallback(endpoint) {
-    this.print(`Namespace: ${endpoint} empty, ready to delete`);
+    this.print(`Namespace ${endpoint} empty, ready to delete`);
 
-    if (this.ioserver.nsps.hasOwnProperty(endpoint))
-      delete this.ioserver.nsps[endpoint];
+    if (this.ioserver.nsps.hasOwnProperty('/' + endpoint))
+      delete this.ioserver.nsps['/' + endpoint];
 
     if (this.namespaces.hasOwnProperty(endpoint));
       delete this.namespaces[endpoint];
-    this.print(`Namespace: ${endpoint} deleted`);
+    this.print(`Namespace ${endpoint} deleted`);
   }
 
   /**

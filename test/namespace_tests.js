@@ -5,12 +5,11 @@ const Server = require('../src/server/server');
 
 describe('Namespace Tests', () => {
   before((done) => {
-    this.endpoint = '/namespaces';
     this.port = 8082;
-    this.SERVERURL = `http://localhost:${this.port}${this.endpoint}`;
     this.server = new Server(this.port);
-    this.server.verbose = false;
     this.server.start();
+
+    this.server.verbose = false;
     done();
   });
 
@@ -22,30 +21,30 @@ describe('Namespace Tests', () => {
   it('Create namespace, should be created under server.namespaces', (done) => {
 
     let client = io('http://localhost:' + this.port);
-    client.emit('create namespace', this.endpoint);
+    client.emit('create namespace');
     client.on('namespace created', (endpoint) => {
-      assert.equal(true, this.server.namespaces.hasOwnProperty(this.endpoint));
-      assert.equal(true, this.server.ioserver.nsps.hasOwnProperty(this.endpoint));
+      assert.equal(true, this.server.namespaces.hasOwnProperty(endpoint));
+      assert.equal(true, this.server.ioserver.nsps.hasOwnProperty('/' + endpoint));
       client.disconnect();
       done();
     });
   });
 
   it('Destroy namespace, should no longer be under server.namespaces', (done) => {
-    this.server.createNamespace(this.endpoint);
-    this.server.namespaces[this.endpoint].verbose = false;
-    this.server.destroyNamespace(this.endpoint);
+    let endpoint = this.server.createNamespace();
+    this.server.namespaces[endpoint].verbose = false;
+    this.server.destroyNamespace(endpoint);
 
-    assert.equal(false, this.server.namespaces.hasOwnProperty(this.endpoint));
-    assert.equal(false, this.server.ioserver.nsps.hasOwnProperty(this.endpoint));
+    assert.equal(false, this.server.namespaces.hasOwnProperty(endpoint));
+    assert.equal(false, this.server.ioserver.nsps.hasOwnProperty('/' + endpoint));
     done();
   });
 
   it('Join namespace, namespace should exist', (done) => {
-    this.server.createNamespace(this.endpoint);
+    let endpoint = this.server.createNamespace();
 
     let client = io('http://localhost:' + this.port);
-    client.emit('join namespace', this.endpoint);
+    client.emit('join namespace', endpoint);
 
     client.on('join namespace', (endpoint) => {
       client.disconnect();
@@ -54,7 +53,7 @@ describe('Namespace Tests', () => {
 
     client.on('namespace not found', () => {
       client.disconnect();
-      done(`Error: ${this.endpoint} namespace should exist`);
+      done(`Error: ${endpoint} namespace should exist`);
     });
   });
 
