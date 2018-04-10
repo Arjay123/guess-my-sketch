@@ -6,14 +6,14 @@ const Server = require('../src/server/server');
 
 describe('Login/Logout Tests', () => {
   before((done) => {
-    this.endpoint = '/loginLogout';
     this.port = 8080;
-    this.SERVERURL = `http://localhost:${this.port}${this.endpoint}`;
     this.server = new Server(this.port);
-    this.server.verbose = false;
     this.server.start();
-    this.server.createNamespace('loginLogout');
-    this.ns = this.server.namespaces['loginLogout'];
+    this.endpoint = this.server.createNamespace();
+    this.SERVERURL = `http://localhost:${this.port}/${this.endpoint}`;
+    this.ns = this.server.namespaces[this.endpoint];
+
+    this.server.verbose = false;
     this.ns.verbose = false;
     done();
   });

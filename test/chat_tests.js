@@ -5,14 +5,14 @@ const Server = require('../src/server/server');
 
 describe('Chat Tests', () => {
   before((done) => {
-    this.endpoint = '/chat';
     this.port = 8081;
-    this.SERVERURL = `http://localhost:${this.port}${this.endpoint}`;
     this.server = new Server(this.port);
-    this.server.verbose = false;
     this.server.start();
-    this.server.createNamespace(this.endpoint);
+    this.endpoint = this.server.createNamespace();
+    this.SERVERURL = `http://localhost:${this.port}/${this.endpoint}`;
     this.ns = this.server.namespaces[this.endpoint];
+
+    this.server.verbose = false;
     this.ns.verbose = false;
     done();
   });

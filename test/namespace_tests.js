@@ -5,12 +5,11 @@ const Server = require('../src/server/server');
 
 describe('Namespace Tests', () => {
   before((done) => {
-    this.endpoint = '/namespaces';
     this.port = 8082;
-    this.SERVERURL = `http://localhost:${this.port}${this.endpoint}`;
     this.server = new Server(this.port);
-    this.server.verbose = false;
     this.server.start();
+
+    this.server.verbose = true;
     done();
   });
 
@@ -22,30 +21,30 @@ describe('Namespace Tests', () => {
   it('Create namespace, should be created under server.namespaces', (done) => {
 
     let client = io('http://localhost:' + this.port);
-    client.emit('create namespace', this.endpoint);
+    client.emit('create namespace');
     client.on('namespace created', (endpoint) => {
-      assert.equal(true, this.server.namespaces.hasOwnProperty(this.endpoint));
-      assert.equal(true, this.server.ioserver.nsps.hasOwnProperty(this.endpoint));
+      assert.equal(true, this.server.namespaces.hasOwnProperty(endpoint));
+      assert.equal(true, this.server.ioserver.nsps.hasOwnProperty('/' + endpoint));
       client.disconnect();
       done();
     });
   });
 
   it('Destroy namespace, should no longer be under server.namespaces', (done) => {
-    this.server.createNamespace(this.endpoint);
-    this.server.namespaces[this.endpoint].verbose = false;
-    this.server.destroyNamespace(this.endpoint);
+    let endpoint = this.server.createNamespace();
+    this.server.namespaces[endpoint].verbose = false;
+    this.server.destroyNamespace(endpoint);
 
-    assert.equal(false, this.server.namespaces.hasOwnProperty(this.endpoint));
-    assert.equal(false, this.server.ioserver.nsps.hasOwnProperty(this.endpoint));
+    assert.equal(false, this.server.namespaces.hasOwnProperty(endpoint));
+    assert.equal(false, this.server.ioserver.nsps.hasOwnProperty('/' + endpoint));
     done();
   });
 
   it('Join namespace, namespace should exist', (done) => {
-    this.server.createNamespace(this.endpoint);
+    let endpoint = this.server.createNamespace();
 
     let client = io('http://localhost:' + this.port);
-    client.emit('join namespace', this.endpoint);
+    client.emit('join namespace', endpoint);
 
     client.on('join namespace', (endpoint) => {
       client.disconnect();
@@ -54,7 +53,7 @@ describe('Namespace Tests', () => {
 
     client.on('namespace not found', () => {
       client.disconnect();
-      done(`Error: ${this.endpoint} namespace should exist`);
+      done(`Error: ${endpoint} namespace should exist`);
     });
   });
 
@@ -70,6 +69,35 @@ describe('Namespace Tests', () => {
     client.on('namespace not found', (endpoint) => {
       client.disconnect();
       done();
+    });
+  });
+
+  it('Receive usernames, should receive "USERNAME1", "USERNAME2"', (done) => {
+    let endpoint = this.server.createNamespace();
+    this.server.namespaces[endpoint].verbose = true;
+
+    let client1 = io('http://localhost:' + this.port + '/' + endpoint);
+    let client2 = io('http://localhost:' + this.port + '/' + endpoint);
+
+    let expectedUsers = ['USERNAME1', 'USERNAME2'];
+
+    client2.on('login success', (username) => {
+      client2.on('username list', (usernames) => {
+        assert.equal(expectedUsers.length, usernames.length);
+        assert.equal(true, usernames.includes('USERNAME1'));
+        assert.equal(true, usernames.includes('USERNAME2'));
+
+        client1.disconnect();
+        client2.disconnect();
+
+        done();
+      });
+    });
+
+
+    client1.emit('login', 'PEERID', 'USERNAME1');
+    client1.on('login success', (username) => {
+      client2.emit('login', 'PEERID', 'USERNAME2');
     });
   });
 
