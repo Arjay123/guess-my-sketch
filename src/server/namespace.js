@@ -17,6 +17,17 @@ module.exports = class Namespace {
     });
   }
 
+  getUsernames() {
+    let usernames = [];
+    let userIDs = Object.keys(this.users);
+
+    userIDs.forEach((userID) => {
+      usernames.push(this.users[userID].username);
+    });
+
+    return usernames;
+  }
+
   print(message) {
     if (this.verbose) console.log(`${this.endpoint}: ${message}`);
   }
@@ -59,9 +70,10 @@ module.exports = class Namespace {
 
     this.print(`${socket.id} has logged in as: ${username}`);
     this.print('Current Users');
-    this.print(this.users);
+    this.print(JSON.stringify(this.users, null, 2));
 
     socket.emit('login success', (username));
+    this.namespace.emit('username list', this.getUsernames());
   }
 
   /**

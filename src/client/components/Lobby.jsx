@@ -16,6 +16,7 @@ export default class Lobby extends React.Component {
 
     socket.on('join namespace', (endpoint) => {
       console.log('Room ' + endpoint + ' found');
+      this.props.joinNamespace(endpoint);
     });
 
     socket.on('namespaces full', () => {
@@ -38,6 +39,7 @@ export default class Lobby extends React.Component {
   render() {
     return (
       <div className='lobby'>
+        <h1>Lobby</h1>
         <input ref={(roomcodeInput) => { this.roomcodeInput = roomcodeInput }}></input>
         <button className='lobby-btn' onClick={this.joinClicked}>Join Room</button>
         <button className='lobby-btn' onClick={this.createClicked}>Create Room</button>

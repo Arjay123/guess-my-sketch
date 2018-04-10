@@ -9,7 +9,7 @@ describe('Namespace Tests', () => {
     this.server = new Server(this.port);
     this.server.start();
 
-    this.server.verbose = false;
+    this.server.verbose = true;
     done();
   });
 
@@ -69,6 +69,35 @@ describe('Namespace Tests', () => {
     client.on('namespace not found', (endpoint) => {
       client.disconnect();
       done();
+    });
+  });
+
+  it('Receive usernames, should receive "USERNAME1", "USERNAME2"', (done) => {
+    let endpoint = this.server.createNamespace();
+    this.server.namespaces[endpoint].verbose = true;
+
+    let client1 = io('http://localhost:' + this.port + '/' + endpoint);
+    let client2 = io('http://localhost:' + this.port + '/' + endpoint);
+
+    let expectedUsers = ['USERNAME1', 'USERNAME2'];
+
+    client2.on('login success', (username) => {
+      client2.on('username list', (usernames) => {
+        assert.equal(expectedUsers.length, usernames.length);
+        assert.equal(true, usernames.includes('USERNAME1'));
+        assert.equal(true, usernames.includes('USERNAME2'));
+
+        client1.disconnect();
+        client2.disconnect();
+
+        done();
+      });
+    });
+
+
+    client1.emit('login', 'PEERID', 'USERNAME1');
+    client1.on('login success', (username) => {
+      client2.emit('login', 'PEERID', 'USERNAME2');
     });
   });
 
