@@ -10,9 +10,9 @@ module.exports = class Namespace {
     let self = this;
     this.namespace.on('connection', function(socket) {
       self.print(`${socket.id} connected`);
-      socket.on('login', (peerID, username) => self.login(socket, peerID, username));
-      socket.on('disconnect', () => self.logout(socket));
-      socket.on('logout', () => self.logout(socket));
+      socket.on('login', (peerID, username) => self.login(socket, peerID, username, self.sendUserlist.bind(self)));
+      socket.on('disconnect', () => self.logout(socket, self.sendUserlist.bind(self)));
+      socket.on('logout', () => self.logout(socket, self.sendUserlist.bind(self)));
       socket.on('chat message', (message) => self.sendMessage(socket, message));
     });
   }
@@ -56,7 +56,7 @@ module.exports = class Namespace {
    * @param {String} peerID - peerID of user
    * @param {String} username - potential username of user
    */
-  login(socket, peerID, username) {
+  login(socket, peerID, username, callback) {
     this.print(`${socket.id} attempting to log in as: ${username}`);
     if (this.getUserByUsername(username)) {
       this.print(`Username ${username} is already in use`);
@@ -69,24 +69,32 @@ module.exports = class Namespace {
     this.users[socket.id] = newUser;
 
     this.print(`${socket.id} has logged in as: ${username}`);
-    this.print('Current Users');
-    this.print(JSON.stringify(this.users, null, 2));
-
     socket.emit('login success', (username));
-    this.namespace.emit('username list', this.getUsernames());
+    callback();
   }
 
   /**
    * logout() logs user out of services & deletes from user list
    */
-  logout(socket) {
+  logout(socket, callback) {
     this.print(`Attempting to log out ${socket.id}`);
     if (this.users.hasOwnProperty(socket.id)) {
       let user = this.users[socket.id];
       this.print(`Logging out user: ${user.username}`);
       delete this.users[socket.id];
       socket.emit('logout success');
+      callback();
     }
+  }
+
+  /**
+   * sendUserlist() sends a username array of connected users to
+   * all connected users in namespace
+   */
+  sendUserlist() {
+    this.print('Current Users');
+    this.print(JSON.stringify(this.users, null, 2));
+    this.namespace.emit('username list', this.getUsernames());
   }
 
   /**
