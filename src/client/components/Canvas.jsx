@@ -1,4 +1,5 @@
 import React from 'react';
+import {SketchPicker} from 'react-color';
 
 export default class Canvas extends React.Component {
   constructor(props) {
@@ -16,7 +17,7 @@ export default class Canvas extends React.Component {
     this.mouseMove = this.mouseMove.bind(this);
     this.drawLine = this.drawLine.bind(this);
     this.mouseUp = this.mouseUp.bind(this);
-    this.changeColor = this.changeColor.bind(this);
+    this.colorChanged = this.colorChanged.bind(this);
   }
 
   drawLine(x0, y0, x1, y1, color) {
@@ -88,13 +89,15 @@ export default class Canvas extends React.Component {
     console.log(this);
   }
 
-  changeColor(color, e) {
+  colorChanged(color) {
     this.setState({
-      color: color
+      color: color.hex
     }, () => console.log(this.state));
   }
 
   render() {
+
+
     return (
       <div className='canvas-wrap'>
         <h1>Canvas</h1>
@@ -105,6 +108,10 @@ export default class Canvas extends React.Component {
           onMouseMove={this.mouseMove}
           onMouseUp={this.mouseUp}
           ref={(c) => {this.canvas = c;}}
+        />
+        <SketchPicker
+          color={this.state.color}
+          onChangeComplete={this.colorChanged}
         />
         <button onClick={(e) => this.changeColor('red', e)}>Red</button>
       </div>
