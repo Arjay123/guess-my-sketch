@@ -10,6 +10,7 @@ module.exports = class Namespace {
     let self = this;
     this.namespace.on('connection', function(socket) {
       self.print(`${socket.id} connected`);
+      self.sendUserlist();
       socket.on('login', (peerID, username) => self.login(socket, peerID, username, self.sendUserlist.bind(self)));
       socket.on('disconnect', () => self.logout(socket, self.sendUserlist.bind(self)));
       socket.on('logout', () => self.logout(socket, self.sendUserlist.bind(self)));
@@ -42,7 +43,7 @@ module.exports = class Namespace {
   sendMessage(socket, message) {
     let user = this.getUserBySocketID(socket.id);
     if (user) {
-      socket.broadcast.emit('chat message', user.username, message);
+      this.namespace.emit('chat message', user.username, message);
     }
   }
 

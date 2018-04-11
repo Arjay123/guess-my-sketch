@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 import Lobby from './Lobby.jsx';
-import WaitingRoom from './WaitingRoom.jsx';
+import Room from './Room.jsx';
 
 // var socket2 = io('http://localhost:3000/loginLogout');
 
@@ -12,7 +12,7 @@ export default class App extends Component {
     this.socket = io();
 
     this.state = {
-      'room': 'lobby'
+      room: 'lobby'
     }
 
     this.joinNamespace = this.joinNamespace.bind(this);
@@ -28,16 +28,18 @@ export default class App extends Component {
 
   render() {
 
-    let room = (
-      <Lobby
-        socket={this.socket}
-        joinNamespace={this.joinNamespace}
-      />
-    );
-
-    if (this.state.room === 'waitingRoom') {
+    var room;
+    if (this.state.room === 'lobby') {
       room = (
-        <WaitingRoom
+        <Lobby
+          socket={this.socket}
+          joinNamespace={this.joinNamespace}
+        />
+      );
+    }
+    else {
+      room = (
+        <Room
           socket={this.socket}
         />
       );

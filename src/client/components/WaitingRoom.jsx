@@ -4,36 +4,15 @@ export default class WaitingRoom extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      users: []
-    }
-
-    let socket = this.props.socket;
-
-    socket.on('username list', (usernames) => {
-      this.setState({
-        'users': usernames
-      });
-    });
-
-    socket.on('login fail', (error) => {
-      console.log(`Failed to login: ${message}`);
-    });
-
-    socket.on('login success', (username) => {
-      console.log(`Successfully logged in with ${username}`);
-    });
-
     this.loginClicked = this.loginClicked.bind(this);
   }
 
   loginClicked() {
-    this.props.socket.emit('login', "PEERID", this.usernameInput.value);
+    this.props.handleLoginClicked(this.usernameInput.value);
   }
 
   render() {
-
-    let users = this.state.users.map((username) =>
+    let users = this.props.users.map((username) =>
       <li>{username}</li>
     );
 
