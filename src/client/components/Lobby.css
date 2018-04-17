@@ -1,0 +1,23 @@
+.lobby {
+  background: red;
+  width: 100%;
+}
+
+.lobby-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.lobby-hdr {
+  /* width: 100%; */
+  /* margin: auto; */
+  text-align: center;
+}
+
+.lobby-body {
+  /* width: 100%; */
+  /* margin: auto; */
+  text-align: center;
+}

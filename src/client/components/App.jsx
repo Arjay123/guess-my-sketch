@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import io from 'socket.io-client';
 import Lobby from './Lobby.jsx';
 import Room from './Room.jsx';
+import styles from './App.css';
 
 // var socket2 = io('http://localhost:3000/loginLogout');
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './Lobby.css';
 
 export default class Lobby extends React.Component {
   constructor(props) {
@@ -38,11 +39,18 @@ export default class Lobby extends React.Component {
 
   render() {
     return (
-      <div className='lobby'>
-        <h1>Lobby</h1>
-        <input ref={(roomcodeInput) => { this.roomcodeInput = roomcodeInput }}></input>
-        <button className='lobby-btn' onClick={this.joinClicked}>Join Room</button>
-        <button className='lobby-btn' onClick={this.createClicked}>Create Room</button>
+      <div className='lobby-wrap'>
+        <div className='lobby'>
+          <div className='lobby-hdr'>
+            <h1>Welcome to Guess My Sketch</h1>
+            <h3>Join a room by entering a 6 character room code or create a new one</h3>
+          </div>
+          <div className='lobby-body'>
+            <input ref={(roomcodeInput) => { this.roomcodeInput = roomcodeInput }}></input>
+            <button className='lobby-btn' onClick={this.joinClicked}>Join Room</button>
+            <button className='lobby-btn' onClick={this.createClicked}>Create Room</button>
+          </div>
+        </div>
       </div>
     );
   }
