@@ -79,7 +79,7 @@ export default class Canvas extends React.Component {
   mouseDown(e) {
     console.log('Draw start');
     this.setState({
-      canvasData: true,
+      drawing: true,
       x: e.clientX,
       y: e.clientY
     }, () => {
@@ -114,8 +114,9 @@ export default class Canvas extends React.Component {
   }
 
   mouseLeave() {
+    console.log('hi');
     this.setState({
-      canvasData: false
+      drawing: false
     });
   }
 
@@ -133,7 +134,7 @@ export default class Canvas extends React.Component {
     canvasData.color = this.state.color;
 
     this.setState({
-      canvasData: false
+      drawing: false
     }, this.drawLine(canvasData, true));
   }
 
