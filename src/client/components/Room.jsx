@@ -1,6 +1,7 @@
 import React from 'react';
 import WaitingRoom from './WaitingRoom.jsx';
 import Chat from './Chat.jsx';
+import Canvas from './Canvas.jsx';
 
 export default class Room extends React.Component {
   constructor(props) {
@@ -44,6 +45,9 @@ export default class Room extends React.Component {
           handleLoginClicked={this.login}
         />
         <Chat
+          socket={this.props.socket}
+        />
+        <Canvas
           socket={this.props.socket}
         />
       </div>
