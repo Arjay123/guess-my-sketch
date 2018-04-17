@@ -47,7 +47,9 @@ export default class Room extends React.Component {
         <Chat
           socket={this.props.socket}
         />
-        <Canvas />
+        <Canvas
+          socket={this.props.socket}
+        />
       </div>
     );
   }

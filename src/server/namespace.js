@@ -15,6 +15,7 @@ module.exports = class Namespace {
       socket.on('disconnect', () => self.logout(socket, self.sendUserlist.bind(self)));
       socket.on('logout', () => self.logout(socket, self.sendUserlist.bind(self)));
       socket.on('chat message', (message) => self.sendMessage(socket, message));
+      socket.on('canvas drawing', (drawing) => self.sendDrawing(socket, drawing));
     });
   }
 
@@ -31,6 +32,10 @@ module.exports = class Namespace {
 
   print(message) {
     if (this.verbose) console.log(`${this.endpoint}: ${message}`);
+  }
+
+  sendDrawing(socket, drawing) {
+    socket.broadcast.emit('canvas drawing', drawing);
   }
 
   /**

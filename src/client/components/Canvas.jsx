@@ -13,14 +13,35 @@ export default class Canvas extends React.Component {
       context: null
     };
 
+    let socket = this.props.socket;
+
+    socket.on('canvas drawing', (drawing) => {
+      console.log(drawing);
+      this.onDrawingReceived(drawing);
+    });
+
     this.mouseDown = this.mouseDown.bind(this);
     this.mouseMove = this.mouseMove.bind(this);
     this.drawLine = this.drawLine.bind(this);
     this.mouseUp = this.mouseUp.bind(this);
     this.colorChanged = this.colorChanged.bind(this);
+    this.onDrawingReceived = this.onDrawingReceived.bind(this);
   }
 
-  drawLine(x0, y0, x1, y1, color) {
+  onDrawingReceived(drawing) {
+    console.log('received drawing');
+    console.log(drawing);
+    this.drawLine(
+      drawing.x0,
+      drawing.y0,
+      drawing.x1,
+      drawing.y1,
+      drawing.color,
+      false
+    );
+  }
+
+  drawLine(x0, y0, x1, y1, color, send) {
     console.log(this);
     console.log(this.state);
     console.log(`Drawing from ${x0}, ${y0} to ${x1}, ${y1}`);
@@ -33,10 +54,21 @@ export default class Canvas extends React.Component {
     this.state.context.beginPath();
     this.state.context.moveTo(x0 - position.left, y0 - position.top);
     this.state.context.lineTo(x1 - position.left, y1 - position.top);
-    this.state.context.strokeStyle = this.state.color;
+    this.state.context.strokeStyle = color;
     this.state.context.lineWidth = 2;
     this.state.context.stroke();
     this.state.context.closePath();
+
+    if (send) {
+      // console.log('sending');
+      this.props.socket.emit('canvas drawing', {
+        x0: x0,
+        y0: y0,
+        x1: x1,
+        y1: y1,
+        color: color
+      });
+    }
   }
 
   mouseDown(e) {
@@ -61,7 +93,8 @@ export default class Canvas extends React.Component {
       this.state.y,
       e.clientX,
       e.clientY,
-      this.state.color
+      this.state.color,
+      true
     );
 
     this.setState({
@@ -76,7 +109,7 @@ export default class Canvas extends React.Component {
     console.log('Draw End');
     this.setState({
       drawing: false
-    }, this.drawLine(this.state.x, this.state.y, e.clientX, e.clientY, this.state.color));
+    }, this.drawLine(this.state.x, this.state.y, e.clientX, e.clientY, this.state.color, true));
   }
 
   componentDidMount() {
