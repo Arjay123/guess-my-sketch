@@ -35,6 +35,8 @@ module.exports = class Namespace {
   }
 
   sendDrawing(socket, drawing) {
+    this.print(`${socket.id} sending drawing:`);
+    console.log(drawing);
     socket.broadcast.emit('canvas drawing', drawing);
   }
 
