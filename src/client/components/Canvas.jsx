@@ -15,9 +15,9 @@ export default class Canvas extends React.Component {
 
     let socket = this.props.socket;
 
-    socket.on('canvas drawing', (drawing) => {
-      console.log(drawing);
-      this.onDrawingReceived(drawing);
+    socket.on('canvas drawing', (canvasData) => {
+      console.log(canvasData);
+      this.onDrawingReceived(canvasData);
     });
 
     this.mouseDown = this.mouseDown.bind(this);
@@ -29,18 +29,18 @@ export default class Canvas extends React.Component {
     this.onDrawingReceived = this.onDrawingReceived.bind(this);
   }
 
-  onDrawingReceived(drawing) {
-    console.log('received drawing');
-    console.log(drawing);
+  onDrawingReceived(canvasData) {
+    console.log('received canvasData');
+    console.log(canvasData);
     let position = this.canvas.getBoundingClientRect();
 
     this.drawLine(
-      drawing,
+      canvasData,
       false
     );
   }
 
-  drawLine(drawing, send) {
+  drawLine(canvasData, send) {
     console.log(this);
     console.log(this.state);
 
@@ -49,38 +49,37 @@ export default class Canvas extends React.Component {
     // this.canvas.height;
     // this.canvas.left;
     let position = this.canvas.getBoundingClientRect();
-    console.log(`Drawing from ${drawing.x0}, ${drawing.y0} to ${drawing.x1}, ${drawing.y1}`);
-    console.log('hi');
+    console.log(`Drawing from ${canvasData.x0}, ${canvasData.y0} to ${canvasData.x1}, ${canvasData.y1}`);
     this.state.context.beginPath();
-    this.state.context.moveTo(drawing.x0, drawing.y0);
-    this.state.context.lineTo(drawing.x1, drawing.y1);
-    this.state.context.strokeStyle = drawing.color;
+    this.state.context.moveTo(canvasData.x0, canvasData.y0);
+    this.state.context.lineTo(canvasData.x1, canvasData.y1);
+    this.state.context.strokeStyle = canvasData.color;
     this.state.context.lineWidth = 2;
     this.state.context.stroke();
     this.state.context.closePath();
 
 
     if (send) {
-      console.log('sending drawing: ' + send);
-      console.log(drawing);
-      this.props.socket.emit('canvas drawing', drawing);
+      console.log('Sending canvasData: ' + send);
+      console.log(canvasData);
+      this.props.socket.emit('canvas canvasData', canvasData);
     }
   }
 
-  getCanvasPosition(drawing) {
+  getCanvasPosition(canvasData) {
     let position = this.canvas.getBoundingClientRect();
     return {
-      x0: drawing.x0 - position.left,
-      y0: drawing.y0 - position.top,
-      x1: drawing.x1 - position.left,
-      y1: drawing.y1 - position.top
+      x0: canvasData.x0 - position.left,
+      y0: canvasData.y0 - position.top,
+      x1: canvasData.x1 - position.left,
+      y1: canvasData.y1 - position.top
     }
   }
 
   mouseDown(e) {
     console.log('Draw start');
     this.setState({
-      drawing: true,
+      canvasData: true,
       x: e.clientX,
       y: e.clientY
     }, () => {
@@ -94,17 +93,17 @@ export default class Canvas extends React.Component {
     }
 
     console.log('Drawing');
-    let drawing = this.getCanvasPosition({
+    let canvasData = this.getCanvasPosition({
       x0: this.state.x,
       y0: this.state.y,
       x1: e.clientX,
       y1: e.clientY
     });
 
-    drawing.color = this.state.color;
+    canvasData.color = this.state.color;
 
     this.drawLine(
-      drawing,
+      canvasData,
       true
     );
 
@@ -116,7 +115,7 @@ export default class Canvas extends React.Component {
 
   mouseLeave() {
     this.setState({
-      drawing: false
+      canvasData: false
     });
   }
 
@@ -125,17 +124,17 @@ export default class Canvas extends React.Component {
     if (!this.state.drawing) { return; }
     console.log('Draw End');
 
-    let drawing = this.getCanvasPosition({
+    let canvasData = this.getCanvasPosition({
       x0: this.state.x,
       y0: this.state.y,
       x1: e.clientX,
       y1: e.clientY
     });
-    drawing.color = this.state.color;
+    canvasData.color = this.state.color;
 
     this.setState({
-      drawing: false
-    }, this.drawLine(drawing, true));
+      canvasData: false
+    }, this.drawLine(canvasData, true));
   }
 
   componentDidMount() {
