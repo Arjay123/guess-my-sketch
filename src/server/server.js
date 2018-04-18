@@ -3,6 +3,13 @@ const path = require('path');
 const http = require('http');
 const io = require('socket.io');
 
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+
+const config = require(path.resolve(__dirname + '/../../webpack.config.js'));
+const compiler = webpack(config);
+
 const Namespace = require('./namespace');
 
 module.exports = class Server {
@@ -14,8 +21,13 @@ module.exports = class Server {
     this.namespaces = {};
     this.verbose = true;
 
+    this.app.use(webpackDevMiddleware(compiler, {
+      publicPath: config.output.publicPath,
+      hot: true
+    }));
+    this.app.use(webpackHotMiddleware(compiler));
     // static files
-    this.app.use('/build', express.static(path.resolve(__dirname + '/../../build')));
+    // this.app.use('/build', express.static(path.resolve(__dirname + '/../../build')));
 
     // routing
     this.app.get('/', function(req, res) {

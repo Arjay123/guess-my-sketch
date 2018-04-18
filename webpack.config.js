@@ -5,12 +5,15 @@ var BUILD_DIR = path.resolve(__dirname, './build');
 var APP_DIR = path.resolve(__dirname, './src/client');
 
 const config = {
-  entry: {
-    main: APP_DIR + '/index.js'
-  },
+  mode: 'development',
+  entry: [
+    path.join(APP_DIR + '/index.js'),
+    'webpack-hot-middleware/client'
+  ],
   output: {
     filename: 'bundle.js',
-    path: BUILD_DIR
+    path: BUILD_DIR,
+    publicPath: ''
   },
   module: {
     rules: [
@@ -24,6 +27,7 @@ const config = {
       },
       {
         test: /\.(jsx|js)?$/,
+        exclude: /node_modules/,
         use: [{
           loader: 'babel-loader',
           options: {
@@ -33,7 +37,11 @@ const config = {
         }]
       }
     ],
-  }
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin()
+  ]
 };
 
 module.exports = config;
