@@ -41,14 +41,7 @@ export default class Canvas extends React.Component {
   }
 
   drawLine(canvasData, send) {
-    console.log(this);
-    console.log(this.state);
 
-    console.log(this.state.context);
-
-    // this.canvas.height;
-    // this.canvas.left;
-    let position = this.canvas.getBoundingClientRect();
     console.log(`Drawing from ${canvasData.x0}, ${canvasData.y0} to ${canvasData.x1}, ${canvasData.y1}`);
     this.state.context.beginPath();
     this.state.context.moveTo(canvasData.x0, canvasData.y0);
@@ -114,7 +107,6 @@ export default class Canvas extends React.Component {
   }
 
   mouseLeave() {
-    console.log('hi');
     this.setState({
       drawing: false
     });

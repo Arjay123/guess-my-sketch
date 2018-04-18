@@ -4,7 +4,7 @@
   "description": "An open source game where users take turns guessing what has drawn by another user",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/server/index.js & ./node_modules/.bin/webpack -w",
+    "start": "nodemon src/server/index.js",
     "webpack": "./node_modules/.bin/webpack -w",
     "test": "./node_modules/mocha/bin/mocha"
   },

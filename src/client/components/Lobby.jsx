@@ -46,9 +46,11 @@ export default class Lobby extends React.Component {
             <h3>Join a room by entering a 6 character room code or create a new one</h3>
           </div>
           <div className='lobby-body'>
-            <input ref={(roomcodeInput) => { this.roomcodeInput = roomcodeInput }}></input>
-            <button className='lobby-btn' onClick={this.joinClicked}>Join Room</button>
-            <button className='lobby-btn' onClick={this.createClicked}>Create Room</button>
+            <input className='lobby-txt' ref={(roomcodeInput) => { this.roomcodeInput = roomcodeInput }}></input>
+            <div className='btn-wrap'>
+              <button className='lobby-btn' onClick={this.joinClicked}>Join Room</button>
+              <button className='lobby-btn' onClick={this.createClicked}>Create Room</button>
+            </div>
           </div>
         </div>
       </div>
