@@ -13,7 +13,8 @@ export default class App extends Component {
     this.socket = io();
 
     this.state = {
-      room: 'lobby'
+      room: 'lobby',
+      roomcode: ''
     }
 
     this.joinNamespace = this.joinNamespace.bind(this);
@@ -23,7 +24,8 @@ export default class App extends Component {
     console.log(`Joining ${endpoint}`);
     this.socket = io(`/${endpoint}`);
     this.setState({
-      'room': 'waitingRoom'
+      'room': 'waitingRoom',
+      'roomcode': endpoint
     });
   }
 
@@ -42,6 +44,7 @@ export default class App extends Component {
       room = (
         <Room
           socket={this.socket}
+          roomcode={this.state.roomcode}
         />
       );
     }

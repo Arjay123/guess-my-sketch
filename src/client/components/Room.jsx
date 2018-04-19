@@ -42,6 +42,7 @@ export default class Room extends React.Component {
                     socket={this.props.socket}
                     users={this.state.users}
                     handleLoginClicked={this.login}
+                    roomcode={this.props.roomcode}
                   />;
 
     // <Chat

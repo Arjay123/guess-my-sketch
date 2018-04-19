@@ -11,8 +11,55 @@
   height: 100%;
 }
 
+.header {
+  height: 50%;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-wrap {
+  height: 50%;
+}
+
+.header,
+.input-wrap {
+  text-align: center;
+}
+
+.input-wrap {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.username-input {
+  font-size: 50px;
+  height: 20%;
+  width: 80%;
+  text-align: center;
+  margin: 5% auto;
+  border-radius: 15px;
+  border-style: solid;
+}
+
+.username-input:focus {
+  outline: none;
+}
+
+.waiting-room-btn {
+  width: 50%;
+  height: 15%;
+  margin: 0 auto;
+  border: 3px solid black;
+  border-radius: 15px;
+}
+
 .title {
   width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .userlist {
@@ -22,9 +69,30 @@
   justify-content: center;
 }
 
-.username {
-  list-style: none;
+.username-wrap,
+.roomcode {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 50px;
+}
+
+.username-wrap {
   height: 10%;
-  overflow: hidden;
+  border: 5px solid black;
   margin: 1% 0;
+}
+
+.roomcode {
+  height: 25%;
+  background-color: rgba(0,0,0,0.6);
+  border-radius: 25px;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.username {
+  -webkit-margin-before: 0;
+  -webkit-margin-after: 0;
 }

@@ -47,32 +47,28 @@ export default class WaitingRoom extends React.Component {
       let color = this.getNextColor(index);
       users.push(
         (<div
-          className='username'
+          className='username-wrap'
           style={{backgroundColor: color}}
           key={index}>
-            {username}
+            <p className='username'>{username}</p>
         </div>)
       );
     }
-    // let users = this.props.users.map((username) => {
-    //   let color = this.getNextColor(currentColor++);
-    //   return (
-    //       <div
-    //         className='username'
-    //         style={{backgroundColor: color}}
-    //         key={username}>
-    //           {username}
-    //       </div>
-    //     );
-    // });
 
     return(
       <div className='waiting-room'>
         <div className='section title'>
-          <h1>WaitingRoom</h1>
-          <h3>Enter your username</h3>
-          <input ref={(usernameInput) => {this.usernameInput = usernameInput }}></input>
-          <button className='waiting-room-btn' onClick={this.loginClicked}>Login</button>
+          <div className='header'>
+            <h1>Guess My Sketch</h1>
+            <p>Welcome!</p>
+            <p>Your room code is</p>
+            <div className='roomcode'>{this.props.roomcode}</div>
+          </div>
+          <div className='input-wrap'>
+            <h2>Enter your username</h2>
+            <input className='username-input' ref={(usernameInput) => {this.usernameInput = usernameInput }}></input>
+            <button className='waiting-room-btn' onClick={this.loginClicked}>Login</button>
+          </div>
         </div>
         <div className='section userlist'>
           {users}
