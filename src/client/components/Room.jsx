@@ -2,6 +2,7 @@ import React from 'react';
 import WaitingRoom from './WaitingRoom.jsx';
 import Chat from './Chat.jsx';
 import Canvas from './Canvas.jsx';
+import styles from './Room.css';
 
 export default class Room extends React.Component {
   constructor(props) {
@@ -37,19 +38,22 @@ export default class Room extends React.Component {
 
   render() {
 
+    let content = <WaitingRoom
+                    socket={this.props.socket}
+                    users={this.state.users}
+                    handleLoginClicked={this.login}
+                  />;
+
+    // <Chat
+    //   socket={this.props.socket}
+    // />
+    // <Canvas
+    //   socket={this.props.socket}
+    // />
+
     return (
       <div className='room'>
-        <WaitingRoom
-          socket={this.props.socket}
-          users={this.state.users}
-          handleLoginClicked={this.login}
-        />
-        <Chat
-          socket={this.props.socket}
-        />
-        <Canvas
-          socket={this.props.socket}
-        />
+        { content }
       </div>
     );
   }
