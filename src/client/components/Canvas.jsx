@@ -1,5 +1,23 @@
 import React from 'react';
-import SketchPicker from 'react-color/lib/Sketch';
+import CompactPicker from 'react-color/lib/Compact';
+import styles from './Canvas.css';
+import { Compact } from 'react-color/lib/components/compact/Compact';
+
+const swatches = [
+  "#B80000",
+  "#DB3E00",
+  "#FCCB00",
+  "#008B02",
+  "#006B76",
+  "#1273DE",
+  "#004DCF",
+  "#5300EB",
+  "#A0522D",
+  "#FFB6C1",
+  "#FFFFFF",
+  "#A9A9A9",
+  "#000000",
+];
 
 export default class Canvas extends React.Component {
   constructor(props) {
@@ -151,21 +169,21 @@ export default class Canvas extends React.Component {
 
     return (
       <div className='canvas-wrap'>
-        <h1>Canvas</h1>
         <canvas
           className='canvas'
           id='canvas'
+          height='500'
+          width='500'
           onMouseDown={this.mouseDown}
           onMouseMove={this.mouseMove}
           onMouseUp={this.mouseUp}
           onMouseLeave={this.mouseLeave}
           ref={(c) => {this.canvas = c;}}
         />
-        <SketchPicker
+        <CompactPicker
           color={this.state.color}
           onChangeComplete={this.colorChanged}
         />
-        <button onClick={(e) => this.changeColor('red', e)}>Red</button>
       </div>
     );
   }

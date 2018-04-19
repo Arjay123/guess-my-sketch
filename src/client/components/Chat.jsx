@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './Chat.css';
 
 export default class Chat extends React.Component {
   constructor(props) {

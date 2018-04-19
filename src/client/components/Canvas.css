@@ -1,0 +1,11 @@
+.canvas-wrap {
+  width: 70%;
+  padding: 20px;
+  background-color: lightskyblue;
+}
+
+.canvas {
+  background: white;
+  margin: 5% auto;
+  box-shadow: 3px 3px 10px #7C7C7C;
+}

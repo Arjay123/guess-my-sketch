@@ -9,7 +9,7 @@ export default class Room extends React.Component {
     super(props);
 
     this.state = {
-      status: 'waiting',
+      status: 'game',
       users: []
     }
 
@@ -44,13 +44,13 @@ export default class Room extends React.Component {
                     handleLoginClicked={this.login}
                     roomcode={this.props.roomcode}
                   />;
+    if (this.state.status === 'game') {
+      content = [
+        <Canvas key='canvas' socket={this.props.socket} />,
+        <Chat key='chat' socket={this.props.socket} />
+      ];
+    }
 
-    // <Chat
-    //   socket={this.props.socket}
-    // />
-    // <Canvas
-    //   socket={this.props.socket}
-    // />
 
     return (
       <div className='room'>
