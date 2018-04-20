@@ -28,7 +28,9 @@ export default class Canvas extends React.Component {
       x: null,
       y: null,
       color: 'black',
-      context: null
+      context: null,
+      lineCap: 'square',
+      lineWidth: 5
     };
 
     let socket = this.props.socket;
@@ -65,7 +67,8 @@ export default class Canvas extends React.Component {
     this.state.context.moveTo(canvasData.x0, canvasData.y0);
     this.state.context.lineTo(canvasData.x1, canvasData.y1);
     this.state.context.strokeStyle = canvasData.color;
-    this.state.context.lineWidth = 2;
+    this.state.context.lineWidth = this.state.lineWidth;
+    this.state.context.lineCap = this.state.lineCap;
     this.state.context.stroke();
     this.state.context.closePath();
 
