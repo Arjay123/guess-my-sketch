@@ -8,7 +8,7 @@ export default class Chat extends React.Component {
     this.state = {
       messages: []
     }
-
+    let self = this;
     let socket = this.props.socket;
     socket.on('chat message', (socketID, message) => {
       this.setState((prevState) => {
@@ -18,7 +18,9 @@ export default class Chat extends React.Component {
             message: message
           }]
         };
-      })
+      }, () => {
+        self.endMessage.scrollIntoView();
+      });
     });
 
     this.sendClicked = this.sendClicked.bind(this);
@@ -45,14 +47,16 @@ export default class Chat extends React.Component {
       );
     });
 
+    messages.push(<div ref={(element) => {this.endMessage = element; }}/>);
+
     return (
       <div className='chat-wrap'>
         <ul className='chat'>
           {messages}
         </ul>
         <div className='chat-ctrl'>
-          <input ref={(messageInput) => {this.messageInput = messageInput}}/>
-          <button onClick={this.sendClicked}>Send</button>
+          <textarea rows='2' className='ctrl-text' ref={(messageInput) => {this.messageInput = messageInput}}/>
+          <button className='ctrl-btn' onClick={this.sendClicked}>Send</button>
         </div>
       </div>
     );
