@@ -8,49 +8,36 @@ export default class WaitingRoom extends React.Component {
     super(props);
 
     this.loginClicked = this.loginClicked.bind(this);
-
-    this.state = {
-      colors: [
-        'lightblue',
-        'lightcoral',
-        'lightgreen',
-        'lightpink',
-        'lightsalmon',
-        'lightseagreen',
-        'lightsteelblue',
-        'lightslategray'
-      ]
-    };
+    this.startClicked = this.startClicked.bind(this);
   }
 
   loginClicked() {
     this.props.handleLoginClicked(this.usernameInput.value);
   }
 
-  getNextColor(currentColor) {
-    let color = null;
-    if (currentColor < this.state.colors.length) {
-      color = this.state.colors[currentColor];
+
+  getUserColor(userNumber) {
+    if (userNumber < this.props.colors.length) {
+      return this.props.colors[userNumber];
     }
-    return color;
+  }
+
+  startClicked() {
+    this.props.startGame();
   }
 
   render() {
 
     let users = [];
 
-    for (var index = 0; index < MAX_USERS; index++) {
-      let username = null;
-      if (index < this.props.users.length) {
-        username = this.props.users[index];
-      }
-      let color = this.getNextColor(index);
+    for (var userID in this.props.users) {
+      let user = this.props.users[userID];
       users.push(
         (<div
           className='username-wrap'
-          style={{backgroundColor: color}}
-          key={index}>
-            <p className='username'>{username}</p>
+          style={{backgroundColor: user._userAvatar.color}}
+          key={userID}>
+            <p className='username'>{user._username}</p>
         </div>)
       );
     }
@@ -73,6 +60,7 @@ export default class WaitingRoom extends React.Component {
         <div className='section userlist'>
           {users}
         </div>
+        <button onClick={this.startClicked}>Start</button>
       </div>
     );
   }

@@ -6,6 +6,19 @@ module.exports = class Namespace {
     this.namespace = namespace;
     this.users = {};
     this.verbose = true;
+    this.userCt = 0;
+    this.availableAvatars = [
+      {color: 'lightblue'},
+      {color: 'lightcoral'},
+      {color: 'lightgreen'},
+      {color: 'lightslategray'},
+      {color: 'lightpink'},
+      {color: 'lightsalmon'},
+      {color: 'lightseagreen'},
+      {color: 'lightsteelblue'},
+    ];
+    this.usedAvatars = [];
+
 
     let self = this;
     this.namespace.on('connection', function(socket) {
@@ -16,7 +29,23 @@ module.exports = class Namespace {
       socket.on('logout', () => self.logout(socket, self.sendUserlist.bind(self)));
       socket.on('chat message', (message) => self.sendMessage(socket, message));
       socket.on('canvas drawing', (drawing) => self.sendDrawing(socket, drawing));
+      socket.on('start game', () => { self.namespace.emit('start game'); })
     });
+  }
+
+  avatarSelected() {
+    let avatar = this.availableAvatars.pop();
+    this.usedAvatars.push(avatar);
+    return avatar;
+  }
+
+  avatarReleased(avatar) {
+    for (var i = 0; i < this.usedAvatars.length; i++) {
+      if (this.usedAvatars[i].color === avatar.color) {
+        this.usedAvatars.splice(i, 1);
+        this.availableAvatars.push(avatar);
+      }
+    }
   }
 
   getUsernames() {
@@ -50,7 +79,7 @@ module.exports = class Namespace {
   sendMessage(socket, message) {
     let user = this.getUserBySocketID(socket.id);
     if (user) {
-      this.namespace.emit('chat message', user.username, message);
+      this.namespace.emit('chat message', socket.id, message);
     }
   }
 
@@ -72,8 +101,8 @@ module.exports = class Namespace {
       socket.emit('login fail', 'Username is in use');
       return;
     }
-
-    var newUser = new User(socket.id, peerID, username);
+    this.userCt++;
+    var newUser = new User(socket.id, peerID, username, this.avatarSelected());
     this.users[socket.id] = newUser;
 
     this.print(`${socket.id} has logged in as: ${username}`);
@@ -89,20 +118,22 @@ module.exports = class Namespace {
     if (this.users.hasOwnProperty(socket.id)) {
       let user = this.users[socket.id];
       this.print(`Logging out user: ${user.username}`);
+      this.avatarReleased(user.userAvatar)
       delete this.users[socket.id];
+      this.userCt--;
       socket.emit('logout success');
       callback();
     }
   }
 
   /**
-   * sendUserlist() sends a username array of connected users to
+   * sendUserlist() sends connected users list to
    * all connected users in namespace
    */
   sendUserlist() {
     this.print('Current Users');
     this.print(JSON.stringify(this.users, null, 2));
-    this.namespace.emit('username list', this.getUsernames());
+    this.namespace.emit('user list', this.users);
   }
 
   /**

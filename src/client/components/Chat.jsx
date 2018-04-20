@@ -6,48 +6,15 @@ export default class Chat extends React.Component {
     super(props);
 
     this.state = {
-      messages: [
-        {
-          'username': 'Arjay',
-          'message': 'Hi this is a message'
-        },
-        {
-          'username': 'Mimi',
-          'message': 'this is another message'
-        },
-        {
-          'username': 'Arjay',
-          'message': 'Lorem ipsum dolor sit amet, et ius quot timeam constituam, id tacimates splendide eum. Phaedrum conclusionemque an mei, harum choro iracundia ne sed. In cum offendit definitiones, forensibus neglegentur pri ad. Sed te meliore ceteros invidunt, per ea lorem movet. Nam ex nihil signiferumque, ius sint bonorum in, te natum argumentum quo. Ius iudicabit assentior an, pri id iudico semper facete.'
-        },
-        {
-          'username': 'Arjay',
-          'message': 'Lorem ipsum dolor sit amet, et ius quot timeam constituam, id tacimates splendide eum. Phaedrum conclusionemque an mei, harum choro iracundia ne sed. In cum offendit definitiones, forensibus neglegentur pri ad. Sed te meliore ceteros invidunt, per ea lorem movet. Nam ex nihil signiferumque, ius sint bonorum in, te natum argumentum quo. Ius iudicabit assentior an, pri id iudico semper facete.'
-        },
-        {
-          'username': 'Arjay',
-          'message': 'Lorem ipsum dolor sit amet, et ius quot timeam constituam, id tacimates splendide eum. Phaedrum conclusionemque an mei, harum choro iracundia ne sed. In cum offendit definitiones, forensibus neglegentur pri ad. Sed te meliore ceteros invidunt, per ea lorem movet. Nam ex nihil signiferumque, ius sint bonorum in, te natum argumentum quo. Ius iudicabit assentior an, pri id iudico semper facete.'
-        },
-        {
-          'username': 'Arjay',
-          'message': 'Lorem ipsum dolor sit amet, et ius quot timeam constituam, id tacimates splendide eum. Phaedrum conclusionemque an mei, harum choro iracundia ne sed. In cum offendit definitiones, forensibus neglegentur pri ad. Sed te meliore ceteros invidunt, per ea lorem movet. Nam ex nihil signiferumque, ius sint bonorum in, te natum argumentum quo. Ius iudicabit assentior an, pri id iudico semper facete.'
-        },
-        {
-          'username': 'Arjay',
-          'message': 'Lorem ipsum dolor sit amet, et ius quot timeam constituam, id tacimates splendide eum. Phaedrum conclusionemque an mei, harum choro iracundia ne sed. In cum offendit definitiones, forensibus neglegentur pri ad. Sed te meliore ceteros invidunt, per ea lorem movet. Nam ex nihil signiferumque, ius sint bonorum in, te natum argumentum quo. Ius iudicabit assentior an, pri id iudico semper facete.'
-        },
-        {
-          'username': 'Arjay',
-          'message': 'Lorem ipsum dolor sit amet, et ius quot timeam constituam, id tacimates splendide eum. Phaedrum conclusionemque an mei, harum choro iracundia ne sed. In cum offendit definitiones, forensibus neglegentur pri ad. Sed te meliore ceteros invidunt, per ea lorem movet. Nam ex nihil signiferumque, ius sint bonorum in, te natum argumentum quo. Ius iudicabit assentior an, pri id iudico semper facete.'
-        }
-      ]
+      messages: []
     }
 
     let socket = this.props.socket;
-    socket.on('chat message', (username, message) => {
+    socket.on('chat message', (socketID, message) => {
       this.setState((prevState) => {
         return {
           messages: [...prevState.messages, {
-            username: username,
+            socketID: socketID,
             message: message
           }]
         };
@@ -64,11 +31,19 @@ export default class Chat extends React.Component {
 
   render() {
 
+    let self = this;
     let messages = this.state.messages.map((message, index) =>
-      <li className='message' key={index}>
-        <span className='username'>{message.username}</span> : <span className='text'>{message.message}</span>
-      </li>
-    );
+    {
+      let user = self.props.users[message.socketID];
+      console.log(message);
+      console.log(user);
+      console.log(self.props.users);
+      return (
+        <li className='message' key={index}>
+          <span className='username' style={{ color: user._userAvatar.color}}>{user._username}</span> : <span className='text'>{message.message}</span>
+        </li>
+      );
+    });
 
     return (
       <div className='chat-wrap'>
