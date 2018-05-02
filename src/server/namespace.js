@@ -79,7 +79,7 @@ module.exports = class Namespace {
   sendMessage(socket, message) {
     let user = this.getUserBySocketID(socket.id);
     if (user) {
-      this.namespace.emit('chat message', socket.id, message);
+      this.namespace.emit('chat message', user.username, user.userAvatar.color, message);
     }
   }
 

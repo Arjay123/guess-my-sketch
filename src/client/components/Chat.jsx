@@ -10,11 +10,12 @@ export default class Chat extends React.Component {
     }
     let self = this;
     let socket = this.props.socket;
-    socket.on('chat message', (socketID, message) => {
+    socket.on('chat message', (username, usercolor, message) => {
       this.setState((prevState) => {
         return {
           messages: [...prevState.messages, {
-            socketID: socketID,
+            username: username,
+            usercolor: usercolor,
             message: message
           }]
         };
@@ -36,13 +37,11 @@ export default class Chat extends React.Component {
     let self = this;
     let messages = this.state.messages.map((message, index) =>
     {
-      let user = self.props.users[message.socketID];
       console.log(message);
-      console.log(user);
       console.log(self.props.users);
       return (
         <li className='message' key={index}>
-          <span className='username' style={{ color: user._userAvatar.color}}>{user._username}</span> : <span className='text'>{message.message}</span>
+          <span className='username' style={{ color: message.usercolor}}>{message.username}</span> : <span className='text'>{message.message}</span>
         </li>
       );
     });
